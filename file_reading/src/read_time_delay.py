@@ -55,6 +55,10 @@ def read_distribution_parallel(
     n_time = 0
     step_size_bytes = 8 + (2 * N * item_size)  # time (8) + data (2*N*size)
 
+    full_times = None
+    if rank == 0:
+        full_times = np.empty(n_time, dtype=precision) 
+
     if rank == 0:
         if not os.path.exists(input_filename):
             print(f"Error: File {input_filename} not found.")
@@ -80,10 +84,6 @@ def read_distribution_parallel(
     
     # Buffers for reading
     local_data_block_float = np.zeros(size_per_rank * 2, dtype=precision)
-    
-    full_times = None
-    if rank == 0:
-        full_times = np.empty(n_time, dtype=np.float64) 
 
     # Read loop (Fill local_Q column by column)
     if rank == 0:
